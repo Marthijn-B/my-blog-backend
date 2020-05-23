@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { MongoClient } from 'mongodb';
+import path from 'path';
 
 const app = express();
 
@@ -33,6 +34,7 @@ const withDB = async (operations, res) => {
   }
 }
 
+app.use(express.static(path.join(__dirname,'/build')));
 app.use(bodyParser.json());
 
 app.get('/api/articles/:name', async (req, res) => {
@@ -82,9 +84,13 @@ app.post('/api/articles/:name/add-comment', (req, res) => {
   }, res)
 });
 
-app.get('/hello', (req, res) => res.send("Hello! (Get Response)"));
-app.get('/hello/:name', (req, res) => res.send(`Hello ${req.params.name}!`))
+// app.get('/hello', (req, res) => res.send("Hello! (Get Response)"));
+// app.get('/hello/:name', (req, res) => res.send(`Hello ${req.params.name}!`))
+//
+// app.post('/hello', (req, res) => res.send(`Hello ${req.body.name}!`));
 
-app.post('/hello', (req, res) => res.send(`Hello ${req.body.name}!`));
+app.get('*',(res, req) => {
+  res.sendFile(path.join(__dirname, '/build/index.html'));
+})
 
 app.listen(8000,() => console.log("listening on port 8000"));
